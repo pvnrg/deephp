@@ -1,0 +1,27 @@
+name: Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_hash:
+        description: 'Commit hash to deploy'
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout specific commit
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.commit_hash }}
+
+      - name: Deploy to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_PATH }}
+          protocol: ftps
